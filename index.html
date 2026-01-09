@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sabbat Tracker Widget</title>
 <style>
-/* ---- Wrapper ---- */
 body, html {
   margin: 0;
   padding: 0;
@@ -19,14 +18,13 @@ body, html {
   perspective: 800px;
 }
 
-/* ---- Widget Container ---- */
 #sabbat-widget {
   position: relative;
   font-family: "Segoe UI", sans-serif;
   width: 100%;
   height: 100%;
-  border-radius: 25px;         /* fully rounded */
-  padding: 8%;                 /* inner spacing */
+  border-radius: 25px;
+  padding: 8%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -39,16 +37,16 @@ body, html {
   animation: bgShift 12s ease-in-out infinite alternate;
 }
 
-/* ---- Floating Glowing Orbs ---- */
+/* Glowing orbs */
 .orb {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(196,138,255,0.8) 0%, rgba(196,138,255,0) 70%);
   pointer-events: none;
-  animation: floatOrb linear infinite;
+  z-index: 0;
 }
 
-/* ---- Wheel Icon ---- */
+/* Wheel icon */
 #wheel-icon {
   position: relative;
   width: clamp(80px, 30%, 150px);
@@ -68,7 +66,7 @@ body, html {
   100% { transform: rotateY(5deg); }
 }
 
-/* ---- Text Styling ---- */
+/* Text */
 #next-sabbat-name {
   position: relative;
   font-size: clamp(20px, 4vw, 30px);
@@ -120,7 +118,7 @@ body, html {
 </div>
 
 <script>
-/* ---- Sabbat Data ---- */
+// Sabbat data
 const sabbats = [
   { name: "Yule", month: 12, day: 21 },
   { name: "Imbolc", month: 2, day: 1 },
@@ -132,18 +130,16 @@ const sabbats = [
   { name: "Samhain", month: 10, day: 31 },
 ];
 
-/* ---- Get next Sabbat ---- */
 function getNextSabbat() {
   const today = new Date();
   let nextSabbat = null;
   let minDiff = Infinity;
-
-  for (let i = 0; i < sabbats.length; i++) {
+  for(let i=0;i<sabbats.length;i++){
     let year = today.getFullYear();
-    let sabbatDate = new Date(year, sabbats[i].month - 1, sabbats[i].day);
-    if (sabbatDate < today) sabbatDate = new Date(year+1, sabbats[i].month-1, sabbats[i].day);
+    let sabbatDate = new Date(year, sabbats[i].month-1, sabbats[i].day);
+    if(sabbatDate<today) sabbatDate = new Date(year+1, sabbats[i].month-1, sabbats[i].day);
     const diff = sabbatDate - today;
-    if(diff < minDiff){
+    if(diff<minDiff){
       minDiff = diff;
       nextSabbat = {...sabbats[i], date: sabbatDate};
     }
@@ -151,16 +147,13 @@ function getNextSabbat() {
   return nextSabbat;
 }
 
-/* ---- Update widget ---- */
 function updateWidget(){
   const next = getNextSabbat();
   const now = new Date();
   const diffTime = next.date - now;
-
   const days = Math.floor(diffTime / (1000*60*60*24));
   const hours = Math.floor((diffTime % (1000*60*60*24))/(1000*60*60));
   const minutes = Math.floor((diffTime % (1000*60*60))/(1000*60));
-
   document.getElementById("next-sabbat-name").textContent = next.name;
   document.getElementById("next-sabbat-date").textContent = next.date.toDateString();
   document.getElementById("countdown").textContent = `in ${days} day${days!==1?'s':''} ${hours}h ${minutes}m`;
@@ -168,33 +161,39 @@ function updateWidget(){
 updateWidget();
 setInterval(updateWidget, 1000*60);
 
-/* ---- Create Glowing Orbs ---- */
+// Floating magical orbs
 const widget = document.getElementById('sabbat-widget');
 const orbs = [];
-const orbCount = 8;
+const orbCount = 12;
 
 for(let i=0;i<orbCount;i++){
   const orb = document.createElement('div');
   orb.className='orb';
-  orb.style.width = orb.style.height = `${Math.random()*30+15}px`;
+  orb.style.width = orb.style.height = `${Math.random()*25+15}px`;
   orb.style.left = `${Math.random()*90}%`;
   orb.style.top = `${Math.random()*90}%`;
-  orb.style.animationDuration = `${Math.random()*15+10}s`;
   orb.style.opacity = Math.random()*0.6+0.3;
   widget.appendChild(orb);
-  orbs.push(orb);
+  orbs.push({
+    el: orb,
+    x: parseFloat(orb.style.left),
+    y: parseFloat(orb.style.top),
+    dx: (Math.random()*0.4-0.2)/2,
+    dy: (Math.random()*0.4-0.2)/2
+  });
 }
 
+// Animate orbs to float around the entire widget
 function animateOrbs(){
-  orbs.forEach(orb=>{
-    let left = parseFloat(orb.style.left);
-    let top = parseFloat(orb.style.top);
-    left += (Math.random()*0.2-0.1); // small random movement
-    top += (Math.random()*0.2-0.1);
-    if(left<0) left=0; if(left>95) left=95;
-    if(top<0) top=0; if(top>95) top=95;
-    orb.style.left = left+'%';
-    orb.style.top = top+'%';
+  orbs.forEach(o=>{
+    o.x += o.dx;
+    o.y += o.dy;
+    if(o.x<0) { o.x=0; o.dx*=-1; }
+    if(o.x>95){ o.x=95; o.dx*=-1; }
+    if(o.y<0) { o.y=0; o.dy*=-1; }
+    if(o.y>95){ o.y=95; o.dy*=-1; }
+    o.el.style.left = o.x+'%';
+    o.el.style.top = o.y+'%';
   });
   requestAnimationFrame(animateOrbs);
 }
