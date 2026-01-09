@@ -9,9 +9,9 @@
   #sabbat-widget {
     font-family: "Segoe UI", sans-serif;
     background-color: #2b2b2b; /* Dark-mode gray */
-    color: #c48aff;            /* Purple text like your grimoire icon */
-    width: 300px;              /* Increased width */
-    height: 300px;             /* Increased height for square */
+    color: #c48aff;            /* Purple text */
+    width: 250px;              
+    height: 250px;             
     padding: 16px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
@@ -24,14 +24,14 @@
 
   /* ---- Wheel Icon ---- */
   #sabbat-widget img#wheel-icon {
-    width: 100px;  /* Increased size */
+    width: 100px;  
     height: 100px;
     margin-bottom: 10px;
   }
 
   /* ---- Sabbat Name ---- */
   #next-sabbat-name {
-    font-size: 18px; /* Increased font size */
+    font-size: 18px; 
     font-weight: bold;
     margin: 4px 0;
   }
@@ -39,7 +39,7 @@
   /* ---- Sabbat Date ---- */
   #next-sabbat-date {
     font-size: 14px; 
-    color: #bfa2ff; /* Lighter purple */
+    color: #bfa2ff; 
     margin: 2px 0;
   }
 
@@ -53,14 +53,17 @@
 </head>
 <body>
 
-<div id="sabbat-widget">
-  <!-- Wheel of the Year Icon -->
-  <img id="wheel-icon" src="woty.png" alt="Wheel of the Year">
+<!-- Wrapper to scale the widget -->
+<div style="transform: scale(1.4); transform-origin: top left;">
+  <div id="sabbat-widget">
+    <!-- Wheel of the Year Icon -->
+    <img id="wheel-icon" src="woty.png" alt="Wheel of the Year">
 
-  <!-- Sabbat Info -->
-  <div id="next-sabbat-name">Loading...</div>
-  <div id="next-sabbat-date"></div>
-  <div id="countdown"></div>
+    <!-- Sabbat Info -->
+    <div id="next-sabbat-name">Loading...</div>
+    <div id="next-sabbat-date"></div>
+    <div id="countdown"></div>
+  </div>
 </div>
 
 <script>
@@ -86,7 +89,6 @@ function getNextSabbat() {
     let year = today.getFullYear();
     let sabbatDate = new Date(year, sabbats[i].month - 1, sabbats[i].day);
 
-    // If already passed this year, check next year
     if (sabbatDate < today) {
       sabbatDate = new Date(year + 1, sabbats[i].month - 1, sabbats[i].day);
     }
@@ -118,9 +120,7 @@ function updateWidget() {
 
 // Initial render
 updateWidget();
-
-// Auto-update every minute
-setInterval(updateWidget, 1000 * 60);
+setInterval(updateWidget, 1000 * 60); // Update every minute
 </script>
 
 </body>
