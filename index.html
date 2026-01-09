@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sabbat Tracker Widget</title>
 <style>
-  /* ---- Wrapper to fill entire iframe ---- */
+  /* ---- Wrapper to fill iframe ---- */
   body, html {
     margin: 0;
     padding: 0;
@@ -15,55 +15,55 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* ensures nothing scrolls */
+    overflow: hidden;
   }
 
   /* ---- Widget Container ---- */
   #sabbat-widget {
     font-family: "Segoe UI", sans-serif;
-    background-color: #2b2b2b;  /* Dark-mode gray */
-    color: #c48aff;             /* Purple text */
-    width: 105%;                /* slightly bigger than iframe */
-    height: 105%;               /* slightly bigger than iframe */
-    margin: -2.5%;              /* centers it while overflowing */
-    border-radius: 16px;        /* rounded corners */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    background-color: #2b2b2b; /* Dark-mode gray */
+    color: #c48aff;            /* Purple text */
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;       /* Rounded edges */
+    padding: 5%;               /* inner spacing */
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2%;                /* spacing inside widget */
-    box-sizing: border-box;
-    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
 
   /* ---- Wheel Icon ---- */
   #sabbat-widget img#wheel-icon {
-    width: 30%;       /* scales with widget */
-    max-width: 120px;
+    width: clamp(60px, 25%, 120px);
     aspect-ratio: 1/1;
     margin-bottom: 2%;
   }
 
   /* ---- Sabbat Name ---- */
   #next-sabbat-name {
-    font-size: 1.5vw;  /* scales with embed width */
+    font-size: clamp(16px, 3vw, 24px);
     font-weight: bold;
     margin: 1% 0;
+    text-align: center;
   }
 
   /* ---- Sabbat Date ---- */
   #next-sabbat-date {
-    font-size: 1.2vw;
+    font-size: clamp(12px, 2.5vw, 20px);
     color: #bfa2ff;
     margin: 0.5% 0;
+    text-align: center;
   }
 
   /* ---- Countdown ---- */
   #countdown {
-    font-size: 1.3vw;
+    font-size: clamp(14px, 2.8vw, 22px);
     font-weight: bold;
     margin-top: 1%;
+    text-align: center;
   }
 </style>
 </head>
