@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sabbat Tracker Widget</title>
+<style>
+  /* ---- Widget Container ---- */
+  #sabbat-widget {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #2b2b2b; /* Dark-mode gray */
+    color: #c48aff;            /* Purple text like your grimoire icon */
+    width: 180px;
+    height: 180px;             /* Square shape */
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* ---- Wheel Icon ---- */
+  #sabbat-widget img#wheel-icon {
+    width: 80px;   /* Bigger size */
+    height: 80px;
+    margin-bottom: 8px;
+  }
+
+  /* ---- Sabbat Name ---- */
+  #next-sabbat-name {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 2px 0;
+  }
+
+  /* ---- Sabbat Date ---- */
+  #next-sabbat-date {
+    font-size: 12px;
+    color: #bfa2ff; /* Lighter purple for contrast */
+    margin: 1px 0;
+  }
+
+  /* ---- Countdown ---- */
+  #countdown {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div id="sabbat-widget">
+  <!-- Wheel of the Year Icon -->
+  <img id="wheel-icon" src="woty.png" alt="Wheel of the Year">
+
+  <!-- Sabbat Info -->
+  <div id="next-sabbat-name">Loading...</div>
+  <div id="next-sabbat-date"></div>
+  <div id="countdown"></div>
+</div>
+
+<script>
+/* ---- Sabbat Data ---- */
+const sabbats = [
+  { name: "Yule", month: 12, day: 21 },
+  { name: "Imbolc", month: 2, day: 1 },
+  { name: "Ostara", month: 3, day: 21 },
+  { name: "Beltane", month: 5, day: 1 },
+  { name: "Litha", month: 6, day: 21 },
+  { name: "Lughnasadh", month: 8, day: 1 },
+  { name: "Mabon", month: 9, day: 21 },
+  { name: "Samhain", month: 10, day: 31 },
+];
+
+/* ---- Get next Sabbat ---- */
+function getNextSabbat() {
+  const today = new Date();
+  let nextSabbat = null;
+  let minDiff = Infinity;
+
+  for (let i = 0; i < sabbats.length; i++) {
+    let year = today.getFullYear();
+    let sabbatDate = new Date(year, sabbats[i].month - 1, sabbats[i].day);
+
+    // If already passed this year, check next year
+    if (sabbatDate < today) {
+      sabbatDate = new Date(year + 1, sabbats[i].month - 1, sabbats[i].day);
+    }
+
+    const diff = sabbatDate - today;
+    if (diff < minDiff) {
+      minDiff = diff;
+      nextSabbat = { ...sabbats[i], date: sabbatDate };
+    }
+  }
+
+  return nextSabbat;
+}
+
+/* ---- Update widget ---- */
+function updateWidget() {
+  const next = getNextSabbat();
+  const now = new Date();
+  const diffTime = next.date - now;
+
+  const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+
+  document.getElementById("next-sabbat-name").textContent = next.name;
+  document.getElementById("next-sabbat-date").textContent = next.date.toDateString();
+  document.getElementById("countdown").textContent = `in ${days} day${days !== 1 ? "s" : ""} ${hours}h ${minutes}m`;
+}
+
+// Initial render
+updateWidget();
+
+// Auto-update every minute
+setInterval(updateWidget, 1000 * 60);
+</script>
+
+</body>
+</html>
