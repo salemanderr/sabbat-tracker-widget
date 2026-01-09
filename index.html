@@ -5,75 +5,126 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sabbat Tracker Widget</title>
 <style>
-  /* ---- Wrapper to fill iframe ---- */
+  /* ---- Wrapper ---- */
   body, html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent;
+    background: transparent;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    perspective: 800px; /* enables 3D perspective */
   }
 
   /* ---- Widget Container ---- */
   #sabbat-widget {
+    position: relative;
     font-family: "Segoe UI", sans-serif;
-    background-color: #2b2b2b; /* Dark-mode gray */
-    color: #c48aff;            /* Purple text */
+    background: linear-gradient(135deg, #2b2b2b, #1e1a2c);
     width: 100%;
     height: 100%;
-    border-radius: 16px;       /* Rounded edges */
-    padding: 5%;               /* inner spacing */
+    border-radius: 20px;
+    padding: 5%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.6), 0 0 20px rgba(196,138,255,0.4);
+    transform: rotateX(3deg) rotateY(-3deg); /* subtle 3D tilt */
+    overflow: hidden;
+    animation: bgShift 12s ease-in-out infinite alternate;
+  }
+
+  /* ---- Floating Stardust ---- */
+  #sabbat-widget::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(white 1px, transparent 1px);
+    background-size: 15px 15px;
+    opacity: 0.08;
+    animation: drift 15s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes drift {
+    0% { background-position: 0 0; }
+    100% { background-position: 150px -150px; }
+  }
+
+  @keyframes bgShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
   }
 
   /* ---- Wheel Icon ---- */
-  #sabbat-widget img#wheel-icon {
+  #wheel-icon {
+    position: relative;
     width: clamp(60px, 25%, 120px);
     aspect-ratio: 1/1;
     margin-bottom: 2%;
+    z-index: 1;
+    animation: glow 2s ease-in-out infinite alternate, wheelTilt 6s ease-in-out infinite alternate;
   }
 
-  /* ---- Sabbat Name ---- */
+  @keyframes glow {
+    0% { filter: drop-shadow(0 0 4px #c48aff); }
+    100% { filter: drop-shadow(0 0 12px #c48aff); }
+  }
+
+  @keyframes wheelTilt {
+    0% { transform: rotateY(-5deg); }
+    100% { transform: rotateY(5deg); }
+  }
+
+  /* ---- Text Styling ---- */
   #next-sabbat-name {
+    position: relative;
     font-size: clamp(16px, 3vw, 24px);
     font-weight: bold;
     margin: 1% 0;
     text-align: center;
+    color: #c48aff;
+    text-shadow: 0 0 6px #a070ff, 0 2px 2px rgba(0,0,0,0.4);
+    z-index: 1;
   }
 
-  /* ---- Sabbat Date ---- */
   #next-sabbat-date {
     font-size: clamp(12px, 2.5vw, 20px);
     color: #bfa2ff;
     margin: 0.5% 0;
     text-align: center;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+    z-index: 1;
   }
 
-  /* ---- Countdown ---- */
   #countdown {
     font-size: clamp(14px, 2.8vw, 22px);
     font-weight: bold;
     margin-top: 1%;
     text-align: center;
+    text-shadow: 0 0 6px #c48aff;
+    animation: flicker 3s infinite;
+    z-index: 1;
+  }
+
+  @keyframes flicker {
+    0%,19%,21%,23%,25%,54%,56%,100% { text-shadow: 0 0 6px #c48aff; }
+    20%,22%,24%,55% { text-shadow: 0 0 12px #c48aff; }
   }
 </style>
 </head>
 <body>
 
 <div id="sabbat-widget">
-  <!-- Wheel of the Year Icon -->
   <img id="wheel-icon" src="woty.png" alt="Wheel of the Year">
-
-  <!-- Sabbat Info -->
   <div id="next-sabbat-name">Loading...</div>
   <div id="next-sabbat-date"></div>
   <div id="countdown"></div>
@@ -112,7 +163,6 @@ function getNextSabbat() {
       nextSabbat = { ...sabbats[i], date: sabbatDate };
     }
   }
-
   return nextSabbat;
 }
 
@@ -128,12 +178,11 @@ function updateWidget() {
 
   document.getElementById("next-sabbat-name").textContent = next.name;
   document.getElementById("next-sabbat-date").textContent = next.date.toDateString();
-  document.getElementById("countdown").textContent = `in ${days} day${days !== 1 ? "s" : ""} ${hours}h ${minutes}m`;
+  document.getElementById("countdown").textContent = `in ${days} day${days!==1?'s':''} ${hours}h ${minutes}m`;
 }
 
-// Initial render
 updateWidget();
-setInterval(updateWidget, 1000 * 60); // Update every minute
+setInterval(updateWidget, 1000*60); // update every minute
 </script>
 
 </body>
